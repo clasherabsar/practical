@@ -1,0 +1,800 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BStat 401 – Practical Assignment</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,wght@0,300;0,400;0,600;1,400&family=JetBrains+Mono:wght@400;500&display=swap');
+
+    :root {
+      --bg:        #f7f8fc;
+      --surface:   #ffffff;
+      --border:    #dde2ee;
+      --accent:    #2653a3;
+      --accent-lt: #e8edf9;
+      --tag-eco:   #1a6b4a;
+      --tag-eco-bg:#e4f4ec;
+      --tag-soc:   #7b3fa0;
+      --tag-soc-bg:#f3eafa;
+      --tag-hlth:  #b84f00;
+      --tag-hlth-bg:#fdf0e6;
+      --tag-edu:   #0069a8;
+      --tag-edu-bg:#e4f1fa;
+      --tag-env:   #3b6b2a;
+      --tag-env-bg:#ecf5e8;
+      --text:      #1a1c24;
+      --muted:     #6b7280;
+      --code-bg:   #1e2130;
+      --code-text: #cdd6f4;
+      --radius:    6px;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Source Serif 4', Georgia, serif;
+      font-size: 17px;
+      line-height: 1.7;
+      color: var(--text);
+      background: var(--bg);
+      padding: 0 16px 80px;
+    }
+
+    /* ── Header ── */
+    header {
+      background: var(--accent);
+      color: #fff;
+      padding: 36px 48px 30px;
+      margin: 0 -16px 48px;
+    }
+    header .meta { font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: .06em; opacity: .75; margin-bottom: 10px; }
+    header h1 { font-size: 26px; font-weight: 600; line-height: 1.25; }
+    header .subtitle { font-size: 15px; opacity: .85; margin-top: 6px; }
+    header .student-row {
+      display: flex; gap: 40px; margin-top: 22px;
+      padding-top: 18px; border-top: 1px solid rgba(255,255,255,.25);
+      font-size: 14px; opacity: .9;
+    }
+    header .student-row span { font-weight: 600; }
+
+    /* ── Layout ── */
+    .container { max-width: 860px; margin: 0 auto; }
+
+    /* ── Note box ── */
+    .note-box {
+      background: var(--accent-lt);
+      border-left: 4px solid var(--accent);
+      border-radius: 0 var(--radius) var(--radius) 0;
+      padding: 16px 20px;
+      margin-bottom: 36px;
+      font-size: 15px;
+    }
+    .note-box strong { color: var(--accent); }
+    .note-box ul { margin: 8px 0 0 20px; }
+    .note-box li { margin-bottom: 4px; }
+
+    /* ── Section headers ── */
+    .section-title {
+      display: flex; align-items: center; gap: 14px;
+      border-bottom: 2px solid var(--accent);
+      padding-bottom: 8px;
+      margin: 48px 0 24px;
+    }
+    .section-title .num {
+      background: var(--accent);
+      color: #fff;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px;
+      font-weight: 500;
+      padding: 3px 9px;
+      border-radius: 3px;
+      white-space: nowrap;
+    }
+    .section-title h2 {
+      font-size: 20px;
+      font-weight: 600;
+      color: var(--accent);
+    }
+
+    /* ── Question card ── */
+    .q-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      margin-bottom: 28px;
+      overflow: hidden;
+    }
+    .q-header {
+      display: flex; align-items: flex-start; gap: 12px;
+      padding: 18px 22px 16px;
+      border-bottom: 1px solid var(--border);
+    }
+    .q-label {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px;
+      font-weight: 500;
+      background: var(--accent-lt);
+      color: var(--accent);
+      padding: 3px 8px;
+      border-radius: 3px;
+      white-space: nowrap;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+    .q-text { font-size: 16px; line-height: 1.6; }
+
+    /* ── Code block ── */
+    .code-block {
+      background: var(--code-bg);
+      position: relative;
+    }
+    .code-header {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 10px 18px 8px;
+      border-bottom: 1px solid rgba(255,255,255,.08);
+    }
+    .code-lang { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: #7c85a2; letter-spacing: .05em; }
+    .copy-btn {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      color: #7c85a2;
+      background: rgba(255,255,255,.07);
+      border: 1px solid rgba(255,255,255,.12);
+      border-radius: 4px;
+      padding: 3px 10px;
+      cursor: pointer;
+      transition: background .15s, color .15s;
+    }
+    .copy-btn:hover { background: rgba(255,255,255,.15); color: #cdd6f4; }
+    pre {
+      padding: 18px 20px 20px;
+      overflow-x: auto;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 13px;
+      line-height: 1.65;
+      color: var(--code-text);
+    }
+
+    /* Syntax highlighting */
+    .kw  { color: #89b4fa; }   /* keyword / function */
+    .fn  { color: #cba6f7; }   /* function call */
+    .st  { color: #a6e3a1; }   /* string */
+    .cm  { color: #6c7086; font-style: italic; }  /* comment */
+    .nb  { color: #fab387; }   /* number / const */
+    .op  { color: #89dceb; }   /* operator */
+    .va  { color: #cdd6f4; }   /* variable */
+
+    /* ── Answer area ── */
+    .answer-area {
+      padding: 16px 22px 18px;
+      border-top: 1px solid var(--border);
+    }
+    .answer-label {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      color: var(--muted);
+      letter-spacing: .05em;
+      margin-bottom: 8px;
+    }
+    .answer-line {
+      border-bottom: 1px dashed var(--border);
+      height: 32px;
+      margin-bottom: 2px;
+    }
+
+    /* ── Variable tag chips ── */
+    .tag-row { display: flex; flex-wrap: wrap; gap: 6px; padding: 14px 22px; border-bottom: 1px solid var(--border); }
+    .chip {
+      font-size: 12px; font-family: 'JetBrains Mono', monospace;
+      padding: 3px 10px; border-radius: 100px; font-weight: 500;
+    }
+    .chip.eco { color: var(--tag-eco); background: var(--tag-eco-bg); }
+    .chip.soc { color: var(--tag-soc); background: var(--tag-soc-bg); }
+    .chip.hlth{ color: var(--tag-hlth); background: var(--tag-hlth-bg); }
+    .chip.edu { color: var(--tag-edu); background: var(--tag-edu-bg); }
+    .chip.env { color: var(--tag-env); background: var(--tag-env-bg); }
+
+    .legend {
+      display: flex; flex-wrap: wrap; gap: 10px;
+      padding: 10px 22px 14px;
+      font-size: 12px;
+    }
+    .legend-item { display: flex; align-items: center; gap: 5px; }
+    .legend-dot { width: 10px; height: 10px; border-radius: 50%; }
+
+    /* ── Declaration ── */
+    .declaration {
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 22px 26px;
+      margin-top: 48px;
+      background: var(--surface);
+    }
+    .declaration h3 { font-size: 16px; font-weight: 600; margin-bottom: 12px; color: var(--accent); }
+    .declaration blockquote {
+      font-style: italic;
+      border-left: 3px solid var(--accent);
+      padding-left: 16px;
+      color: var(--muted);
+      font-size: 15px;
+      line-height: 1.6;
+      margin-bottom: 24px;
+    }
+    .sig-line { border-bottom: 1px solid var(--text); width: 200px; height: 32px; display: inline-block; }
+
+    /* ── Footer ── */
+    footer {
+      text-align: center;
+      font-size: 13px;
+      color: var(--muted);
+      margin-top: 48px;
+      padding-top: 20px;
+      border-top: 1px solid var(--border);
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="container">
+    <div class="meta">DEPARTMENT OF STATISTICS · UNIVERSITY OF RAJSHAHI</div>
+    <h1>BStat 401 – Multivariate Analysis</h1>
+    <div class="subtitle">B.Sc. (Hons.) Part – IV &nbsp;·&nbsp; Practical Assignment &nbsp;·&nbsp; May 29, 2026</div>
+    <div class="student-row">
+      <div>Student ID: <span>___________________________</span></div>
+      <div>Name: <span>___________________________</span></div>
+    </div>
+  </div>
+</header>
+
+<div class="container">
+
+  <!-- Note Box -->
+  <div class="note-box">
+    <strong>N.B.</strong>
+    <ul>
+      <li>Use the <strong>last four digits of your student ID</strong> to set the seed value for the object <code>U0</code> in the R file.</li>
+      <li>Run the R code step-by-step and insert your answers to the following questions.</li>
+      <li>Save this file with the file name of your <strong>Student ID</strong>.</li>
+      <li>Finally, create a <strong>PDF file</strong> named with your Student ID and submit it.</li>
+    </ul>
+  </div>
+
+  <!-- ─────────────────────────────────── SETUP ─────────────────────────────── -->
+
+  <div class="section-title">
+    <div class="num">SETUP</div>
+    <h2>Data Generation &amp; Preparation</h2>
+  </div>
+
+  <div class="q-card">
+    <div class="code-block">
+      <div class="code-header">
+        <span class="code-lang">R · setup</span>
+        <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+      </div>
+      <pre><span class="cm"># Load required libraries</span>
+<span class="fn">library</span>(<span class="va">tidyverse</span>); <span class="fn">library</span>(<span class="va">factoextra</span>); <span class="fn">library</span>(<span class="va">psych</span>)
+<span class="fn">library</span>(<span class="va">corrplot</span>);  <span class="fn">library</span>(<span class="va">CCA</span>);       <span class="fn">library</span>(<span class="va">CCP</span>)
+<span class="fn">library</span>(<span class="va">cluster</span>);   <span class="fn">library</span>(<span class="va">NbClust</span>)
+
+<span class="cm"># *** Insert the last 4 digits of your student ID below ***</span>
+<span class="va">U0</span> <span class="op">&lt;-</span> <span class="nb">____</span>          <span class="cm"># e.g.  U0 &lt;- 4170</span>
+<span class="fn">set.seed</span>(<span class="va">U0</span>)
+<span class="fn">print</span>(<span class="fn">paste</span>(<span class="st">"The last 4 digits of your ID:"</span>, <span class="va">U0</span>))
+
+<span class="cm"># Generate 300-observation multivariate dataset (5 latent factors, 16 variables)</span>
+<span class="va">n</span> <span class="op">&lt;-</span> <span class="nb">300</span>
+<span class="va">factor1</span> <span class="op">&lt;-</span> <span class="fn">rnorm</span>(<span class="va">n</span>, mean <span class="op">=</span> <span class="nb">50</span>, sd <span class="op">=</span> <span class="nb">10</span>)   <span class="cm"># Economic</span>
+<span class="va">factor2</span> <span class="op">&lt;-</span> <span class="fn">rnorm</span>(<span class="va">n</span>, mean <span class="op">=</span> <span class="nb">60</span>, sd <span class="op">=</span> <span class="nb">12</span>)   <span class="cm"># Social</span>
+<span class="va">factor3</span> <span class="op">&lt;-</span> <span class="fn">rnorm</span>(<span class="va">n</span>, mean <span class="op">=</span> <span class="nb">40</span>, sd <span class="op">=</span>  <span class="nb">8</span>)   <span class="cm"># Health</span>
+<span class="va">factor4</span> <span class="op">&lt;-</span> <span class="fn">rnorm</span>(<span class="va">n</span>, mean <span class="op">=</span> <span class="nb">70</span>, sd <span class="op">=</span> <span class="nb">15</span>)   <span class="cm"># Education</span>
+<span class="va">factor5</span> <span class="op">&lt;-</span> <span class="fn">rnorm</span>(<span class="va">n</span>, mean <span class="op">=</span> <span class="nb">55</span>, sd <span class="op">=</span> <span class="nb">11</span>)   <span class="cm"># Environmental</span>
+
+<span class="cm"># … (observed variables created from weighted factor combinations + noise) …</span>
+<span class="cm"># Final data frame</span>
+<span class="fn">glimpse</span>(<span class="va">data</span>)
+
+<span class="cm"># Standardise</span>
+<span class="va">data_scaled</span> <span class="op">&lt;-</span> <span class="fn">scale</span>(<span class="va">data</span>)
+<span class="fn">head</span>(<span class="va">data_scaled</span>)
+<span class="fn">summary</span>(<span class="va">data</span>)
+<span class="fn">summary</span>(<span class="va">data_scaled</span>)</pre>
+    </div>
+  </div>
+
+  <!-- ─────────────────────────────────── Q0 ─────────────────────────────────── -->
+
+  <div class="section-title">
+    <div class="num">Q0</div>
+    <h2>Data Characteristics</h2>
+  </div>
+
+  <!-- Q0a -->
+  <div class="q-card">
+    <div class="q-header">
+      <div class="q-label">Q0(a)</div>
+      <div class="q-text">Write the names and types of all variables given in the generated data frame named <code>data</code>.</div>
+    </div>
+
+    <div class="tag-row">
+      <span class="chip eco">GDP_growth</span>
+      <span class="chip eco">unemployment</span>
+      <span class="chip eco">inflation</span>
+      <span class="chip eco">income_per_capita</span>
+      <span class="chip soc">crime_rate</span>
+      <span class="chip soc">population_density</span>
+      <span class="chip soc">social_support</span>
+      <span class="chip hlth">life_expectancy</span>
+      <span class="chip hlth">infant_mortality</span>
+      <span class="chip hlth">health_expenditure</span>
+      <span class="chip edu">literacy_rate</span>
+      <span class="chip edu">school_enrollment</span>
+      <span class="chip edu">teacher_student_ratio</span>
+      <span class="chip env">air_quality_index</span>
+      <span class="chip env">green_space</span>
+      <span class="chip env">water_quality</span>
+    </div>
+    <div class="legend">
+      <div class="legend-item"><div class="legend-dot" style="background:#1a6b4a"></div> Economic</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#7b3fa0"></div> Social</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#b84f00"></div> Health</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#0069a8"></div> Education</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#3b6b2a"></div> Environmental</div>
+    </div>
+
+    <div class="code-block">
+      <div class="code-header">
+        <span class="code-lang">R · Q0(a)</span>
+        <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+      </div>
+      <pre><span class="fn">glimpse</span>(<span class="va">data</span>)   <span class="cm"># shows variable names, types, and first values</span></pre>
+    </div>
+    <div class="answer-area">
+      <div class="answer-label">ANSWER</div>
+      <div class="answer-line"></div>
+      <div class="answer-line"></div>
+      <div class="answer-line"></div>
+    </div>
+  </div>
+
+  <!-- Q0b -->
+  <div class="q-card">
+    <div class="q-header">
+      <div class="q-label">Q0(b)</div>
+      <div class="q-text">What is the purpose of the command <code>scale(data)</code>?</div>
+    </div>
+    <div class="code-block">
+      <div class="code-header">
+        <span class="code-lang">R · Q0(b)</span>
+        <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+      </div>
+      <pre><span class="va">data_scaled</span> <span class="op">&lt;-</span> <span class="fn">scale</span>(<span class="va">data</span>)
+<span class="fn">head</span>(<span class="va">data_scaled</span>)</pre>
+    </div>
+    <div class="answer-area">
+      <div class="answer-label">ANSWER</div>
+      <div class="answer-line"></div>
+      <div class="answer-line"></div>
+      <div class="answer-line"></div>
+    </div>
+  </div>
+
+  <!-- Q0c -->
+  <div class="q-card">
+    <div class="q-header">
+      <div class="q-label">Q0(c)</div>
+      <div class="q-text">Interpret the output of the command <code>summary(data_scaled)</code>.</div>
+    </div>
+    <div class="code-block">
+      <div class="code-header">
+        <span class="code-lang">R · Q0(c)</span>
+        <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+      </div>
+      <pre><span class="fn">summary</span>(<span class="va">data</span>)
+<span class="fn">summary</span>(<span class="va">data_scaled</span>)</pre>
+    </div>
+    <div class="answer-area">
+      <div class="answer-label">ANSWER</div>
+      <div class="answer-line"></div>
+      <div class="answer-line"></div>
+      <div class="answer-line"></div>
+    </div>
+  </div>
+
+  <!-- ─────────────────────────────────── Q1 ─────────────────────────────────── -->
+
+  <div class="section-title">
+    <div class="num">Q1</div>
+    <h2>Principal Component Analysis (PCA)</h2>
+  </div>
+
+  <!-- Q1a -->
+  <div class="q-card">
+    <div class="q-header">
+      <div class="q-label">Q1(a)</div>
+      <div class="q-text">Find the eigenvalues of the covariance matrix for the data frame <code>data_scaled</code>.</div>
+    </div>
+    <div class="code-block">
+      <div class="code-header">
+        <span class="code-lang">R · Q1(a)</span>
+        <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+      </div>
+      <pre><span class="cm"># Correlation matrix and plot</span>
+<span class="va">cor_matrix</span> <span class="op">&lt;-</span> <span class="fn">cor</span>(<span class="va">data_scaled</span>)
+<span class="fn">corrplot</span>(<span class="va">cor_matrix</span>, method <span class="op">=</span> <span class="st">"color"</span>, type <span class="op">=</span> <span class="st">"upper"</span>, tl.cex <span class="op">=</span> <span class="nb">0.8</span>)
+
+<span class="cm"># Eigenvectors and eigenvalues</span>
+<span class="va">e</span>         <span class="op">&lt;-</span> <span class="fn">eigen</span>(<span class="va">cor_matrix</span>)
+<span class="va">e.value</span>   <span class="op">&lt;-</span> <span class="va">e</span><span class="op">$</span><span class="va">values</span>
+<span class="va">e.vector</span>  <span class="op">&lt;-</span> <span class="va">e</span><span class="op">$</span><span class="va">vectors</span>
+<span class="fn">print</span>(<span class="va">e.value</span>)</pre>
+    </div>
+    <div class="answer-area">
+      <div class="answer-label">ANSWER</div>
+      <div class="answer-line"></div>
+      <div class="answer-line"></div>
+      <div class="answer-line"></div>
+    </div>
+  </div>
+
+  <!-- Q1b -->
+  <div class="q-card">
+    <div class="q-header">
+      <div class="q-label">Q1(b)</div>
+      <div class="q-text">Perform PCA. Draw a scree plot and interpret it.</div>
+    </div>
+    <div class="code-block">
+      <div class="code-header">
+        <span class="code-lang">R · Q1(b)</span>
+        <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+      </div>
+      <pre><span class="cm"># Perform PCA</span>
+<span class="va">pca_result</span> <span class="op">&lt;-</span> <span class="fn">prcomp</span>(<span class="va">data_scaled</span>, center <span class="op">=</span> <span class="nb">TRUE</span>, scale. <span class="op">=</span> <span class="nb">TRUE</span>)
+<span class="fn">summary</span>(<span class="va">pca_result</span>)
+
+<span class="cm"># Scree plot</span>
+<span class="fn">fviz_eig</span>(<span class="va">pca_result</span>, addlabels <span class="op">=</span> <span class="nb">TRUE</span>, ylim <span class="op">=</span> <span class="fn">c</span>(<span class="nb">0</span>, <span class="nb">30</span>)) <span class="op">+</span>
+  <span class="fn">ggtitle</span>(<span class="st">"Scree Plot - PCA Eigenvalues"</span>) <span class="op">+</span>
+  <span class="fn">theme_minimal</span>()</pre>
+    </div>
+    <div class="answer-area">
+      <div class="answer-label">ANSWER — include your scree plot interpretation</div>
+      <div class="answer-line"></div>
+      <div class="answer-line"></div>
+      <div class="answer-line"></div>
+      <div class="answer-line"></div>
+    </div>
+  </div>
+
+  <!-- Q1c -->
+  <div class="q-card">
+    <div class="q-header">
+      <div class="q-label">Q1(c)</div>
+      <div class="q-text">Visualize variable contributions and interpret the graph.</div>
+    </div>
+    <div class="code-block">
+      <div class="code-header">
+        <span class="code-lang">R · Q1(c)</span>
+        <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+      </div>
+      <pre><span class="fn">fviz_pca_var</span>(<span class="va">pca_result</span>,
+             col.var  <span class="op">=</span> <span class="st">"contrib"</span>,
+             gradient.cols <span class="op">=</span> <span class="fn">c</span>(<span class="st">"#00AFBB"</span>, <span class="st">"#E7B800"</span>, <span class="st">"#FC4E07"</span>),
+             repel <span class="op">=</span> <span class="nb">TRUE</span>,
+             title <span class="op">=</span> <span class="st">"PCA - Variable Contributions"</span>)</pre>
+    </div>
+    <div class="answer-area">
+      <div class="answer-label">ANSWER — describe arrow directions, lengths, and colour patterns</div>
+      <div class="answer-line"></div>
+      <div class="answer-line"></div>
+      <div class="answer-line"></div>
+      <div class="answer-line"></div>
+    </div>
+  </div>
+
+  <!-- Q1d -->
+  <div class="q-card">
+    <div class="q-header">
+      <div class="q-label">Q1(d)</div>
+      <div class="q-text">Compute the "Explained variance by each component" and interpret it.</div>
+    </div>
+    <div class="code-block">
+      <div class="code-header">
+        <span class="code-lang">R · Q1(d)</span>
+        <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+      </div>
+      <pre><span class="cm"># Loadings for first 4 PCs</span>
+<span class="va">loadings</span> <span class="op">&lt;-</span> <span class="va">pca_result</span><span class="op">$</span><span class="va">rotation</span>[, <span class="nb">1</span><span class="op">:</span><span class="nb">4</span>]
+<span class="fn">print</span>(<span class="fn">round</span>(<span class="va">loadings</span>, <span class="nb">3</span>))
+
+<span class="cm"># Explained variance table</span>
+<span class="va">explained_variance</span> <span class="op">&lt;-</span> <span class="fn">summary</span>(<span class="va">pca_result</span>)<span class="op">$</span><span class="va">importance</span>[<span class="nb">2</span>, ]
+<span class="va">explained_variance_df</span> <span class="op">&lt;-</span> <span class="fn">data.frame</span>(
+  Component         <span class="op">=</span> <span class="fn">paste0</span>(<span class="st">"PC"</span>, <span class="nb">1</span><span class="op">:</span><span class="fn">length</span>(<span class="va">explained_variance</span>)),
+  Variance_Explained <span class="op">=</span> <span class="va">explained_variance</span> <span class="op">*</span> <span class="nb">100</span>
+)
+<span class="fn">print</span>(<span class="va">explained_variance_df</span>)</pre>
+    </div>
+    <div class="answer-area">
+      <div class="answer-label">ANSWER — note cumulative variance and the "elbow" point</div>
+      <div class="answer-line"></div>
+      <div class="answer-line"></div>
+      <div class="answer-line"></div>
+    </div>
+  </div>
+
+  <!-- ─────────────────────────────────── Q2 ─────────────────────────────────── -->
+
+  <div class="section-title">
+    <div class="num">Q2</div>
+    <h2>Factor Analysis (FA)</h2>
+  </div>
+
+  <!-- Q2a -->
+  <div class="q-card">
+    <div class="q-header">
+      <div class="q-label">Q2(a)</div>
+      <div class="q-text">Apply the Kaiser-Meyer-Olkin (KMO) test and Bartlett's test of sphericity. Comment on these two tests.</div>
+    </div>
+    <div class="code-block">
+      <div class="code-header">
+        <span class="code-lang">R · Q2(a)</span>
+        <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+      </div>
+      <pre><span class="cm"># Cumulative % of variance explained by eigenvalues</span>
+<span class="va">cum.e.value</span> <span class="op">&lt;-</span> <span class="fn">cumsum</span>(<span class="va">e.value</span>)
+<span class="va">cum.e.value</span> <span class="op">/</span> <span class="fn">sum</span>(<span class="va">e.value</span>) <span class="op">*</span> <span class="nb">100</span>
+
+<span class="cm"># KMO test (overall MSA should be &gt; 0.6 to proceed)</span>
+<span class="fn">KMO</span>(<span class="va">cor_matrix</span>)
+
+<span class="cm"># Bartlett's test (p &lt; 0.05 → reject H0: correlation matrix is identity)</span>
+<span class="fn">cortest.bartlett</span>(<span class="fn">cor</span>(<span class="va">data_scaled</span>), n <span class="op">=</span> <span class="fn">nrow</span>(<span class="va">data_scaled</span>))</pre>
+    </div>
+    <div class="answer-area">
+      <div class="answer-label">ANSWER — report KMO value and Bartlett χ², df, p-value</div>
+      <div class="answer-line"></div>
+      <div class="answer-line"></div>
+      <div class="answer-line"></div>
+      <div class="answer-line"></div>
+    </div>
+  </div>
+
+  <!-- Q2b -->
+  <div class="q-card">
+    <div class="q-header">
+      <div class="q-label">Q2(b)</div>
+      <div class="q-text">Select the suitable number of factors based on the scree plot and assign that value to <code>Nfacs</code>.</div>
+    </div>
+    <div class="code-block">
+      <div class="code-header">
+        <span class="code-lang">R · Q2(b)</span>
+        <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+      </div>
+      <pre><span class="cm"># Scree plot for factor selection</span>
+<span class="fn">plot</span>(x <span class="op">=</span> <span class="fn">seq</span>(<span class="nb">1</span><span class="op">:</span><span class="fn">length</span>(<span class="va">e.value</span>)), y <span class="op">=</span> <span class="va">e.value</span>, type <span class="op">=</span> <span class="st">"o"</span>,
+     main <span class="op">=</span> <span class="st">"Scree Plot"</span>, xlab <span class="op">=</span> <span class="st">"Number of factors"</span>, ylab <span class="op">=</span> <span class="st">"Eigenvalue"</span>)
+
+<span class="cm"># *** Set the number of factors you selected ***</span>
+<span class="va">Nfacs</span> <span class="op">&lt;-</span> <span class="nb">____</span></pre>
+    </div>
+    <div class="answer-area">
+      <div class="answer-label">ANSWER — state your chosen Nfacs value and justify with the scree plot</div>
+      <div class="answer-line"></div>
+      <div class="answer-line"></div>
+    </div>
+  </div>
+
+  <!-- Q2c -->
+  <div class="q-card">
+    <div class="q-header">
+      <div class="q-label">Q2(c)</div>
+      <div class="q-text">Perform FA and interpret the results. Provide possible names for the assumed factors.</div>
+    </div>
+    <div class="code-block">
+      <div class="code-header">
+        <span class="code-lang">R · Q2(c)</span>
+        <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+      </div>
+      <pre><span class="cm"># FA with psych::fa (varimax + ML)</span>
+<span class="va">fa_result</span> <span class="op">&lt;-</span> <span class="fn">fa</span>(<span class="va">data_scaled</span>, nfactors <span class="op">=</span> <span class="va">Nfacs</span>,
+                rotate <span class="op">=</span> <span class="st">"varimax"</span>, fm <span class="op">=</span> <span class="st">"ml"</span>)
+<span class="fn">print</span>(<span class="va">fa_result</span>, digits <span class="op">=</span> <span class="nb">3</span>, sort <span class="op">=</span> <span class="nb">TRUE</span>)
+
+<span class="va">loadings</span> <span class="op">&lt;-</span> <span class="va">fa_result</span><span class="op">$</span><span class="va">loadings</span>
+<span class="va">loadings</span>
+
+<span class="cm"># FA with stats::factanal (varimax)</span>
+<span class="va">fa_result_vmax</span> <span class="op">&lt;-</span> <span class="fn">factanal</span>(x <span class="op">=</span> <span class="va">data_scaled</span>, factors <span class="op">=</span> <span class="va">Nfacs</span>,
+                            rotation <span class="op">=</span> <span class="st">"varimax"</span>)
+<span class="fn">print</span>(<span class="va">fa_result_vmax</span>, digits <span class="op">=</span> <span class="nb">3</span>, sort <span class="op">=</span> <span class="nb">TRUE</span>)
+<span class="va">fa_result_vmax</span><span class="op">$</span><span class="va">loadings</span></pre>
+    </div>
+    <div class="answer-area">
+      <div class="answer-label">ANSWER — list factor names and top-loading variables for each</div>
+      <div class="answer-line"></div>
+      <div class="answer-line"></div>
+      <div class="answer-line"></div>
+      <div class="answer-line"></div>
+      <div class="answer-line"></div>
+    </div>
+  </div>
+
+  <!-- ─────────────────────────────────── Q3 ─────────────────────────────────── -->
+
+  <div class="section-title">
+    <div class="num">Q3</div>
+    <h2>Canonical Correlation Analysis (CCA)</h2>
+  </div>
+
+  <!-- Q3a -->
+  <div class="q-card">
+    <div class="q-header">
+      <div class="q-label">Q3(a)</div>
+      <div class="q-text">Interpret the CCA results provided by the given R code.</div>
+    </div>
+    <div class="code-block">
+      <div class="code-header">
+        <span class="code-lang">R · Q3(a)</span>
+        <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+      </div>
+      <pre><span class="cm"># Set X: Economic + Social variables</span>
+<span class="va">X_vars</span> <span class="op">&lt;-</span> <span class="va">data_scaled</span>[, <span class="fn">c</span>(<span class="st">"GDP_growth"</span>, <span class="st">"unemployment"</span>, <span class="st">"inflation"</span>,
+                          <span class="st">"income_per_capita"</span>, <span class="st">"crime_rate"</span>, <span class="st">"population_density"</span>)]
+
+<span class="cm"># Set Y: Health + Education + Environmental variables</span>
+<span class="va">Y_vars</span> <span class="op">&lt;-</span> <span class="va">data_scaled</span>[, <span class="fn">c</span>(<span class="st">"life_expectancy"</span>, <span class="st">"infant_mortality"</span>,
+                          <span class="st">"health_expenditure"</span>, <span class="st">"literacy_rate"</span>,
+                          <span class="st">"school_enrollment"</span>, <span class="st">"air_quality_index"</span>,
+                          <span class="st">"green_space"</span>, <span class="st">"water_quality"</span>)]
+
+<span class="cm"># Perform CCA</span>
+<span class="va">cca_result</span> <span class="op">&lt;-</span> <span class="fn">cc</span>(<span class="va">X_vars</span>, <span class="va">Y_vars</span>)
+<span class="fn">print</span>(<span class="fn">round</span>(<span class="va">cca_result</span><span class="op">$</span><span class="va">cor</span>, <span class="nb">4</span>))   <span class="cm"># Canonical correlations</span>
+
+<span class="cm"># Wilks Lambda significance test</span>
+<span class="va">rho</span> <span class="op">&lt;-</span> <span class="va">cca_result</span><span class="op">$</span><span class="va">cor</span>
+<span class="va">n</span>   <span class="op">&lt;-</span> <span class="fn">nrow</span>(<span class="va">X_vars</span>)
+<span class="va">p</span>   <span class="op">&lt;-</span> <span class="fn">ncol</span>(<span class="va">X_vars</span>)
+<span class="va">q</span>   <span class="op">&lt;-</span> <span class="fn">ncol</span>(<span class="va">Y_vars</span>)
+<span class="va">significance_test</span> <span class="op">&lt;-</span> <span class="fn">p.asym</span>(<span class="va">rho</span>, <span class="va">n</span>, <span class="va">p</span>, <span class="va">q</span>, tstat <span class="op">=</span> <span class="st">"Wilks"</span>)
+<span class="fn">print</span>(<span class="va">significance_test</span>)
+
+<span class="cm"># Canonical loadings</span>
+<span class="fn">print</span>(<span class="fn">round</span>(<span class="va">cca_result</span><span class="op">$</span><span class="va">xcoef</span>[, <span class="nb">1</span><span class="op">:</span><span class="nb">3</span>], <span class="nb">3</span>))   <span class="cm"># X loadings</span>
+<span class="fn">print</span>(<span class="fn">round</span>(<span class="va">cca_result</span><span class="op">$</span><span class="va">ycoef</span>[, <span class="nb">1</span><span class="op">:</span><span class="nb">3</span>], <span class="nb">3</span>))   <span class="cm"># Y loadings</span></pre>
+    </div>
+    <div class="answer-area">
+      <div class="answer-label">ANSWER — report canonical correlations, significant pairs, and key loadings</div>
+      <div class="answer-line"></div>
+      <div class="answer-line"></div>
+      <div class="answer-line"></div>
+      <div class="answer-line"></div>
+      <div class="answer-line"></div>
+    </div>
+  </div>
+
+  <!-- ─────────────────────────────────── Q4 ─────────────────────────────────── -->
+
+  <div class="section-title">
+    <div class="num">Q4</div>
+    <h2>K-Means Cluster Analysis</h2>
+  </div>
+
+  <!-- Q4a -->
+  <div class="q-card">
+    <div class="q-header">
+      <div class="q-label">Q4(a)</div>
+      <div class="q-text">Determine the optimal number of clusters using the Elbow method and Silhouette method, and assign this value to <code>K.value</code>.</div>
+    </div>
+    <div class="code-block">
+      <div class="code-header">
+        <span class="code-lang">R · Q4(a)</span>
+        <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+      </div>
+      <pre><span class="cm"># Method 1: Elbow (within-cluster sum of squares)</span>
+<span class="fn">fviz_nbclust</span>(<span class="va">data_scaled</span>, <span class="va">kmeans</span>, method <span class="op">=</span> <span class="st">"wss"</span>) <span class="op">+</span>
+  <span class="fn">ggtitle</span>(<span class="st">"Elbow Method for Optimal K"</span>)
+
+<span class="cm"># Method 2: Silhouette (maximise average silhouette width)</span>
+<span class="va">sil_width</span> <span class="op">&lt;-</span> <span class="fn">sapply</span>(<span class="nb">2</span><span class="op">:</span><span class="nb">10</span>, function(<span class="va">k</span>) {
+  <span class="va">km</span> <span class="op">&lt;-</span> <span class="fn">kmeans</span>(<span class="va">data_scaled</span>, centers <span class="op">=</span> <span class="va">k</span>, nstart <span class="op">=</span> <span class="nb">25</span>)
+  <span class="va">ss</span> <span class="op">&lt;-</span> <span class="fn">silhouette</span>(<span class="va">km</span><span class="op">$</span><span class="va">cluster</span>, <span class="fn">dist</span>(<span class="va">data_scaled</span>))
+  <span class="fn">mean</span>(<span class="va">ss</span>[, <span class="nb">3</span>])
+})
+<span class="va">optimal_k_sil</span> <span class="op">&lt;-</span> <span class="fn">which.max</span>(<span class="va">sil_width</span>) <span class="op">+</span> <span class="nb">1</span>
+<span class="fn">print</span>(<span class="fn">paste</span>(<span class="st">"Optimal k by Silhouette method:"</span>, <span class="va">optimal_k_sil</span>))
+
+<span class="cm"># *** Assign your chosen K ***</span>
+<span class="va">K.value</span> <span class="op">&lt;-</span> <span class="nb">____</span></pre>
+    </div>
+    <div class="answer-area">
+      <div class="answer-label">ANSWER — state K.value chosen from the two methods and justify</div>
+      <div class="answer-line"></div>
+      <div class="answer-line"></div>
+      <div class="answer-line"></div>
+    </div>
+  </div>
+
+  <!-- Q4b -->
+  <div class="q-card">
+    <div class="q-header">
+      <div class="q-label">Q4(b)</div>
+      <div class="q-text">Perform the K-means cluster analysis with the assigned <code>K.value</code> and interpret briefly the outputs provided by the given R code.</div>
+    </div>
+    <div class="code-block">
+      <div class="code-header">
+        <span class="code-lang">R · Q4(b)</span>
+        <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+      </div>
+      <pre><span class="fn">set.seed</span>(<span class="va">U0</span>)
+<span class="va">kmeans_result</span> <span class="op">&lt;-</span> <span class="fn">kmeans</span>(<span class="va">data_scaled</span>, centers <span class="op">=</span> <span class="va">K.value</span>, nstart <span class="op">=</span> <span class="nb">25</span>)
+
+<span class="cm"># Attach cluster labels to original data</span>
+<span class="va">data_with_clusters</span>          <span class="op">&lt;-</span> <span class="fn">as.data.frame</span>(<span class="va">data</span>)
+<span class="va">data_with_clusters</span><span class="op">$</span><span class="va">cluster</span>  <span class="op">&lt;-</span> <span class="fn">as.factor</span>(<span class="va">kmeans_result</span><span class="op">$</span><span class="va">cluster</span>)
+
+<span class="cm"># Cluster sizes and centres</span>
+<span class="fn">print</span>(<span class="fn">table</span>(<span class="va">kmeans_result</span><span class="op">$</span><span class="va">cluster</span>))
+<span class="fn">print</span>(<span class="fn">round</span>(<span class="va">kmeans_result</span><span class="op">$</span><span class="va">centers</span>, <span class="nb">3</span>))
+
+<span class="cm"># Per-cluster mean summary</span>
+<span class="va">cluster_summary</span> <span class="op">&lt;-</span> <span class="va">data_with_clusters</span> <span class="op">%&gt;%</span>
+  <span class="fn">group_by</span>(<span class="va">cluster</span>) <span class="op">%&gt;%</span>
+  <span class="fn">summarise</span>(<span class="va">Count</span> <span class="op">=</span> <span class="fn">n</span>(), <span class="fn">across</span>(<span class="fn">everything</span>(), <span class="va">mean</span>))
+<span class="fn">print</span>(<span class="va">cluster_summary</span>)
+
+<span class="cm"># PCA biplot of clusters</span>
+<span class="va">pca_scores</span>          <span class="op">&lt;-</span> <span class="fn">as.data.frame</span>(<span class="va">pca_result</span><span class="op">$</span><span class="va">x</span>[, <span class="nb">1</span><span class="op">:</span><span class="nb">2</span>])
+<span class="va">pca_scores</span><span class="op">$</span><span class="va">cluster</span>  <span class="op">&lt;-</span> <span class="fn">as.factor</span>(<span class="va">kmeans_result</span><span class="op">$</span><span class="va">cluster</span>)
+
+<span class="fn">ggplot</span>(<span class="va">pca_scores</span>, <span class="fn">aes</span>(x <span class="op">=</span> <span class="va">PC1</span>, y <span class="op">=</span> <span class="va">PC2</span>, color <span class="op">=</span> <span class="va">cluster</span>)) <span class="op">+</span>
+  <span class="fn">geom_point</span>(size <span class="op">=</span> <span class="nb">2</span>, alpha <span class="op">=</span> <span class="nb">0.7</span>) <span class="op">+</span>
+  <span class="fn">stat_ellipse</span>(level <span class="op">=</span> <span class="nb">0.68</span>) <span class="op">+</span>
+  <span class="fn">labs</span>(title <span class="op">=</span> <span class="st">"K-Means Clusters in PCA Space"</span>,
+       x <span class="op">=</span> <span class="st">"Principal Component 1"</span>, y <span class="op">=</span> <span class="st">"Principal Component 2"</span>) <span class="op">+</span>
+  <span class="fn">theme_minimal</span>() <span class="op">+</span>
+  <span class="fn">scale_color_brewer</span>(palette <span class="op">=</span> <span class="st">"Set1"</span>)</pre>
+    </div>
+    <div class="answer-area">
+      <div class="answer-label">ANSWER — describe cluster sizes, centroid differences, and PCA biplot separation</div>
+      <div class="answer-line"></div>
+      <div class="answer-line"></div>
+      <div class="answer-line"></div>
+      <div class="answer-line"></div>
+      <div class="answer-line"></div>
+    </div>
+  </div>
+
+  <!-- ─────────────────────────────── DECLARATION ──────────────────────────────── -->
+
+  <div class="declaration">
+    <h3>Declaration Statement</h3>
+    <blockquote>
+      "I, myself, have written the answers and have not copied text from the solutions of any classmates.
+      I have not used AI text generators or AI-powered paraphrasing tools to create any part of the content."
+    </blockquote>
+    <div>Signature: &nbsp;<span class="sig-line"></span></div>
+  </div>
+
+  <footer>
+    BStat 401 · Multivariate Analysis · University of Rajshahi · May 29, 2026
+    &nbsp;·&nbsp; Good Luck!
+  </footer>
+
+</div><!-- /.container -->
+
+<script>
+  function copyCode(btn) {
+    const pre = btn.closest('.code-block').querySelector('pre');
+    const text = pre.innerText;
+    navigator.clipboard.writeText(text).then(() => {
+      btn.textContent = 'Copied!';
+      setTimeout(() => btn.textContent = 'Copy', 1800);
+    });
+  }
+</script>
+</body>
+</html>

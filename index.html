@@ -311,24 +311,86 @@
         <button class="copy-btn" onclick="copyCode(this)">Copy</button>
       </div>
       <pre><span class="cm"># Load required libraries</span>
-<span class="fn">library</span>(<span class="va">tidyverse</span>); <span class="fn">library</span>(<span class="va">factoextra</span>); <span class="fn">library</span>(<span class="va">psych</span>)
-<span class="fn">library</span>(<span class="va">corrplot</span>);  <span class="fn">library</span>(<span class="va">CCA</span>);       <span class="fn">library</span>(<span class="va">CCP</span>)
-<span class="fn">library</span>(<span class="va">cluster</span>);   <span class="fn">library</span>(<span class="va">NbClust</span>)
+<span class="fn">library</span>(<span class="va">tidyverse</span>)
+<span class="fn">library</span>(<span class="va">factoextra</span>)
+<span class="fn">library</span>(<span class="va">psych</span>)
+<span class="fn">library</span>(<span class="va">corrplot</span>)
+<span class="fn">library</span>(<span class="va">CCA</span>)
+<span class="fn">library</span>(<span class="va">CCP</span>)
+<span class="fn">library</span>(<span class="va">cluster</span>)
+<span class="fn">library</span>(<span class="va">NbClust</span>)
 
-<span class="va">U0</span> <span class="op">&lt;-</span> <span class="nb">4170</span>          <span class="cm"># last 4 digits of Student ID</span>
-<span class="fn">set.seed</span>(<span class="va">U0</span>)
+<span class="cm"># Set seed using last four digits of Student ID</span>
+<span class="va">U0</span> <span class="op">&lt;-</span> <span class="nb">4170</span>
+<span class="fn">set.seed</span>(<span class="nb">4170</span>)
 <span class="fn">print</span>(<span class="fn">paste</span>(<span class="st">"The last 4 digits of your ID:"</span>, <span class="va">U0</span>))
+<span class="fn">cat</span>(<span class="st">"If it is correct, proceed; Otherwise change it!"</span>)
 
-<span class="cm"># Generate 300-observation multivariate dataset (5 latent factors, 16 variables)</span>
-<span class="va">n</span> <span class="op">&lt;-</span> <span class="nb">300</span>
-<span class="va">factor1</span> <span class="op">&lt;-</span> <span class="fn">rnorm</span>(<span class="va">n</span>, mean <span class="op">=</span> <span class="nb">50</span>, sd <span class="op">=</span> <span class="nb">10</span>)
-<span class="va">factor2</span> <span class="op">&lt;-</span> <span class="fn">rnorm</span>(<span class="va">n</span>, mean <span class="op">=</span> <span class="nb">60</span>, sd <span class="op">=</span> <span class="nb">12</span>)
-<span class="va">factor3</span> <span class="op">&lt;-</span> <span class="fn">rnorm</span>(<span class="va">n</span>, mean <span class="op">=</span> <span class="nb">40</span>, sd <span class="op">=</span>  <span class="nb">8</span>)
-<span class="va">factor4</span> <span class="op">&lt;-</span> <span class="fn">rnorm</span>(<span class="va">n</span>, mean <span class="op">=</span> <span class="nb">70</span>, sd <span class="op">=</span> <span class="nb">15</span>)
-<span class="va">factor5</span> <span class="op">&lt;-</span> <span class="fn">rnorm</span>(<span class="va">n</span>, mean <span class="op">=</span> <span class="nb">55</span>, sd <span class="op">=</span> <span class="nb">11</span>)
-<span class="cm"># … (observed variables + data frame creation) …</span>
+<span class="cm"># Generate multivariate dataset with 5 latent factors and 15 observed variables</span>
+<span class="va">n</span> <span class="op">&lt;-</span> <span class="nb">300</span>  <span class="cm"># number of observations</span>
+
+<span class="cm"># Create latent factors</span>
+<span class="va">factor1</span> <span class="op">&lt;-</span> <span class="fn">rnorm</span>(<span class="va">n</span>, mean <span class="op">=</span> <span class="nb">50</span>, sd <span class="op">=</span> <span class="nb">10</span>)  <span class="cm"># Economic factor</span>
+<span class="va">factor2</span> <span class="op">&lt;-</span> <span class="fn">rnorm</span>(<span class="va">n</span>, mean <span class="op">=</span> <span class="nb">60</span>, sd <span class="op">=</span> <span class="nb">12</span>)  <span class="cm"># Social factor</span>
+<span class="va">factor3</span> <span class="op">&lt;-</span> <span class="fn">rnorm</span>(<span class="va">n</span>, mean <span class="op">=</span> <span class="nb">40</span>, sd <span class="op">=</span>  <span class="nb">8</span>)  <span class="cm"># Health factor</span>
+<span class="va">factor4</span> <span class="op">&lt;-</span> <span class="fn">rnorm</span>(<span class="va">n</span>, mean <span class="op">=</span> <span class="nb">70</span>, sd <span class="op">=</span> <span class="nb">15</span>)  <span class="cm"># Education factor</span>
+<span class="va">factor5</span> <span class="op">&lt;-</span> <span class="fn">rnorm</span>(<span class="va">n</span>, mean <span class="op">=</span> <span class="nb">55</span>, sd <span class="op">=</span> <span class="nb">11</span>)  <span class="cm"># Environmental factor</span>
+
+<span class="cm"># Economic indicators (load heavily on factor1)</span>
+<span class="va">GDP_growth</span>        <span class="op">&lt;-</span> <span class="nb">0.8</span> <span class="op">*</span> <span class="va">factor1</span> <span class="op">+</span> <span class="nb">0.1</span> <span class="op">*</span> <span class="va">factor2</span> <span class="op">+</span> <span class="fn">rnorm</span>(<span class="va">n</span>, sd <span class="op">=</span> <span class="nb">5</span>)
+<span class="va">unemployment</span>      <span class="op">&lt;-</span> <span class="op">-</span><span class="nb">0.7</span> <span class="op">*</span> <span class="va">factor1</span> <span class="op">+</span> <span class="nb">0.2</span> <span class="op">*</span> <span class="va">factor3</span> <span class="op">+</span> <span class="fn">rnorm</span>(<span class="va">n</span>, sd <span class="op">=</span> <span class="nb">4</span>)
+<span class="va">inflation</span>         <span class="op">&lt;-</span> <span class="op">-</span><span class="nb">0.6</span> <span class="op">*</span> <span class="va">factor1</span> <span class="op">+</span> <span class="nb">0.3</span> <span class="op">*</span> <span class="va">factor4</span> <span class="op">+</span> <span class="fn">rnorm</span>(<span class="va">n</span>, sd <span class="op">=</span> <span class="nb">3</span>)
+<span class="va">income_per_capita</span> <span class="op">&lt;-</span>  <span class="nb">0.9</span> <span class="op">*</span> <span class="va">factor1</span> <span class="op">+</span> <span class="nb">0.1</span> <span class="op">*</span> <span class="va">factor5</span> <span class="op">+</span> <span class="fn">rnorm</span>(<span class="va">n</span>, sd <span class="op">=</span> <span class="nb">6</span>)
+
+<span class="cm"># Social indicators (load heavily on factor2)</span>
+<span class="va">crime_rate</span>          <span class="op">&lt;-</span> <span class="op">-</span><span class="nb">0.7</span> <span class="op">*</span> <span class="va">factor2</span> <span class="op">+</span> <span class="nb">0.2</span> <span class="op">*</span> <span class="va">factor3</span> <span class="op">+</span> <span class="fn">rnorm</span>(<span class="va">n</span>, sd <span class="op">=</span> <span class="nb">5</span>)
+<span class="va">population_density</span>  <span class="op">&lt;-</span>  <span class="nb">0.6</span> <span class="op">*</span> <span class="va">factor2</span> <span class="op">+</span> <span class="nb">0.3</span> <span class="op">*</span> <span class="va">factor4</span> <span class="op">+</span> <span class="fn">rnorm</span>(<span class="va">n</span>, sd <span class="op">=</span> <span class="nb">8</span>)
+<span class="va">social_support</span>      <span class="op">&lt;-</span>  <span class="nb">0.8</span> <span class="op">*</span> <span class="va">factor2</span> <span class="op">+</span> <span class="nb">0.1</span> <span class="op">*</span> <span class="va">factor5</span> <span class="op">+</span> <span class="fn">rnorm</span>(<span class="va">n</span>, sd <span class="op">=</span> <span class="nb">4</span>)
+
+<span class="cm"># Health indicators (load heavily on factor3)</span>
+<span class="va">life_expectancy</span>   <span class="op">&lt;-</span>  <span class="nb">0.8</span> <span class="op">*</span> <span class="va">factor3</span> <span class="op">+</span> <span class="nb">0.2</span> <span class="op">*</span> <span class="va">factor1</span> <span class="op">+</span> <span class="fn">rnorm</span>(<span class="va">n</span>, sd <span class="op">=</span> <span class="nb">3</span>)
+<span class="va">infant_mortality</span>  <span class="op">&lt;-</span> <span class="op">-</span><span class="nb">0.9</span> <span class="op">*</span> <span class="va">factor3</span> <span class="op">+</span> <span class="nb">0.1</span> <span class="op">*</span> <span class="va">factor2</span> <span class="op">+</span> <span class="fn">rnorm</span>(<span class="va">n</span>, sd <span class="op">=</span> <span class="nb">2</span>)
+<span class="va">health_expenditure</span><span class="op">&lt;-</span>  <span class="nb">0.7</span> <span class="op">*</span> <span class="va">factor3</span> <span class="op">+</span> <span class="nb">0.2</span> <span class="op">*</span> <span class="va">factor4</span> <span class="op">+</span> <span class="fn">rnorm</span>(<span class="va">n</span>, sd <span class="op">=</span> <span class="nb">5</span>)
+
+<span class="cm"># Education indicators (load heavily on factor4)</span>
+<span class="va">literacy_rate</span>         <span class="op">&lt;-</span> <span class="nb">0.8</span> <span class="op">*</span> <span class="va">factor4</span> <span class="op">+</span> <span class="nb">0.2</span> <span class="op">*</span> <span class="va">factor1</span> <span class="op">+</span> <span class="fn">rnorm</span>(<span class="va">n</span>, sd <span class="op">=</span> <span class="nb">4</span>)
+<span class="va">school_enrollment</span>     <span class="op">&lt;-</span> <span class="nb">0.9</span> <span class="op">*</span> <span class="va">factor4</span> <span class="op">+</span> <span class="nb">0.1</span> <span class="op">*</span> <span class="va">factor3</span> <span class="op">+</span> <span class="fn">rnorm</span>(<span class="va">n</span>, sd <span class="op">=</span> <span class="nb">5</span>)
+<span class="va">teacher_student_ratio</span> <span class="op">&lt;-</span> <span class="nb">0.7</span> <span class="op">*</span> <span class="va">factor4</span> <span class="op">+</span> <span class="nb">0.2</span> <span class="op">*</span> <span class="va">factor2</span> <span class="op">+</span> <span class="fn">rnorm</span>(<span class="va">n</span>, sd <span class="op">=</span> <span class="nb">3</span>)
+
+<span class="cm"># Environmental indicators (load heavily on factor5)</span>
+<span class="va">air_quality_index</span> <span class="op">&lt;-</span> <span class="op">-</span><span class="nb">0.8</span> <span class="op">*</span> <span class="va">factor5</span> <span class="op">+</span> <span class="nb">0.2</span> <span class="op">*</span> <span class="va">factor3</span> <span class="op">+</span> <span class="fn">rnorm</span>(<span class="va">n</span>, sd <span class="op">=</span> <span class="nb">10</span>)
+<span class="va">green_space</span>       <span class="op">&lt;-</span>  <span class="nb">0.7</span> <span class="op">*</span> <span class="va">factor5</span> <span class="op">+</span> <span class="nb">0.2</span> <span class="op">*</span> <span class="va">factor1</span> <span class="op">+</span> <span class="fn">rnorm</span>(<span class="va">n</span>, sd <span class="op">=</span> <span class="nb">6</span>)
+<span class="va">water_quality</span>     <span class="op">&lt;-</span>  <span class="nb">0.8</span> <span class="op">*</span> <span class="va">factor5</span> <span class="op">+</span> <span class="nb">0.1</span> <span class="op">*</span> <span class="va">factor4</span> <span class="op">+</span> <span class="fn">rnorm</span>(<span class="va">n</span>, sd <span class="op">=</span> <span class="nb">4</span>)
+
+<span class="cm"># Create dataframe</span>
+<span class="va">data</span> <span class="op">&lt;-</span> <span class="fn">data.frame</span>(
+  GDP_growth            <span class="op">=</span> <span class="va">GDP_growth</span>        <span class="op">+</span>     <span class="nb">2</span>,
+  unemployment          <span class="op">=</span> <span class="fn">abs</span>(<span class="va">unemployment</span>   <span class="op">+</span>     <span class="nb">5</span>),
+  inflation             <span class="op">=</span> <span class="fn">abs</span>(<span class="va">inflation</span>       <span class="op">+</span>     <span class="nb">3</span>),
+  income_per_capita     <span class="op">=</span> <span class="va">income_per_capita</span>  <span class="op">+</span> <span class="nb">10000</span>,
+  crime_rate            <span class="op">=</span> <span class="fn">abs</span>(<span class="va">crime_rate</span>      <span class="op">+</span>    <span class="nb">10</span>),
+  population_density    <span class="op">=</span> <span class="va">population_density</span> <span class="op">+</span>   <span class="nb">100</span>,
+  social_support        <span class="op">=</span> <span class="va">social_support</span>     <span class="op">+</span>     <span class="nb">4</span>,
+  life_expectancy       <span class="op">=</span> <span class="va">life_expectancy</span>    <span class="op">+</span>    <span class="nb">70</span>,
+  infant_mortality      <span class="op">=</span> <span class="fn">abs</span>(<span class="va">infant_mortality</span><span class="op">+</span>    <span class="nb">10</span>),
+  health_expenditure    <span class="op">=</span> <span class="va">health_expenditure</span> <span class="op">+</span>  <span class="nb">1000</span>,
+  literacy_rate         <span class="op">=</span> <span class="va">literacy_rate</span>      <span class="op">+</span>    <span class="nb">70</span>,
+  school_enrollment     <span class="op">=</span> <span class="va">school_enrollment</span>  <span class="op">+</span>    <span class="nb">60</span>,
+  teacher_student_ratio <span class="op">=</span> <span class="va">teacher_student_ratio</span> <span class="op">+</span> <span class="nb">15</span>,
+  air_quality_index     <span class="op">=</span> <span class="fn">abs</span>(<span class="va">air_quality_index</span><span class="op">+</span>   <span class="nb">50</span>),
+  green_space           <span class="op">=</span> <span class="va">green_space</span>        <span class="op">+</span>    <span class="nb">20</span>,
+  water_quality         <span class="op">=</span> <span class="va">water_quality</span>      <span class="op">+</span>    <span class="nb">30</span>
+)
+
+<span class="cm"># See every column in the data frame</span>
 <span class="fn">glimpse</span>(<span class="va">data</span>)
+
+<span class="cm"># Standardize the data</span>
 <span class="va">data_scaled</span> <span class="op">&lt;-</span> <span class="fn">scale</span>(<span class="va">data</span>)
+
+<span class="cm"># Display first few rows</span>
+<span class="fn">head</span>(<span class="va">data_scaled</span>)
+
 <span class="fn">summary</span>(<span class="va">data</span>)
 <span class="fn">summary</span>(<span class="va">data_scaled</span>)</pre>
     </div>
@@ -738,8 +800,15 @@ $df
     </div>
     <div class="code-block">
       <div class="code-header"><span class="code-lang">R · Q2(b)</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
-      <pre><span class="fn">plot</span>(x <span class="op">=</span> <span class="fn">seq</span>(<span class="nb">1</span><span class="op">:</span><span class="fn">length</span>(<span class="va">e.value</span>)), y <span class="op">=</span> <span class="va">e.value</span>, type <span class="op">=</span> <span class="st">"o"</span>,
+      <pre><span class="cm"># Cumulative percentage of total variance</span>
+<span class="va">cum.e.value</span> <span class="op">&lt;-</span> <span class="fn">cumsum</span>(<span class="va">e.value</span>)
+<span class="va">cum.e.value</span> <span class="op">/</span> <span class="fn">sum</span>(<span class="va">e.value</span>) <span class="op">*</span> <span class="nb">100</span>
+
+<span class="cm"># Scree plot</span>
+<span class="fn">plot</span>(x <span class="op">=</span> <span class="fn">seq</span>(<span class="nb">1</span><span class="op">:</span><span class="fn">length</span>(<span class="va">e.value</span>)), y <span class="op">=</span> <span class="va">e.value</span>, type <span class="op">=</span> <span class="st">"o"</span>,
      main <span class="op">=</span> <span class="st">"Scree Plot"</span>, xlab <span class="op">=</span> <span class="st">"Number of factors"</span>, ylab <span class="op">=</span> <span class="st">"Eigenvalue"</span>)
+
+<span class="cm"># Select the suitable number of factors based on the above scree plot</span>
 <span class="va">Nfacs</span> <span class="op">&lt;-</span> <span class="nb">5</span></pre>
     </div>
     <div class="output-block">
@@ -910,8 +979,12 @@ population_density 0.063   0.692   0.512</div>
     </div>
     <div class="code-block">
       <div class="code-header"><span class="code-lang">R · Q4(a)</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
-      <pre><span class="fn">fviz_nbclust</span>(<span class="va">data_scaled</span>, <span class="va">kmeans</span>, method <span class="op">=</span> <span class="st">"wss"</span>) <span class="op">+</span>
+      <pre><span class="cm"># Determine optimal number of clusters using multiple methods</span>
+<span class="cm"># Method 1: Elbow method</span>
+<span class="fn">fviz_nbclust</span>(<span class="va">data_scaled</span>, <span class="va">kmeans</span>, method <span class="op">=</span> <span class="st">"wss"</span>) <span class="op">+</span>
   <span class="fn">ggtitle</span>(<span class="st">"Elbow Method for Optimal K"</span>)
+
+<span class="cm"># Method 2: Silhouette method</span>
 <span class="va">sil_width</span> <span class="op">&lt;-</span> <span class="fn">sapply</span>(<span class="nb">2</span><span class="op">:</span><span class="nb">10</span>, function(<span class="va">k</span>) {
   <span class="va">km</span> <span class="op">&lt;-</span> <span class="fn">kmeans</span>(<span class="va">data_scaled</span>, centers <span class="op">=</span> <span class="va">k</span>, nstart <span class="op">=</span> <span class="nb">25</span>)
   <span class="va">ss</span> <span class="op">&lt;-</span> <span class="fn">silhouette</span>(<span class="va">km</span><span class="op">$</span><span class="va">cluster</span>, <span class="fn">dist</span>(<span class="va">data_scaled</span>))
@@ -919,6 +992,8 @@ population_density 0.063   0.692   0.512</div>
 })
 <span class="va">optimal_k_sil</span> <span class="op">&lt;-</span> <span class="fn">which.max</span>(<span class="va">sil_width</span>) <span class="op">+</span> <span class="nb">1</span>
 <span class="fn">print</span>(<span class="fn">paste</span>(<span class="st">"Optimal k by Silhouette method:"</span>, <span class="va">optimal_k_sil</span>))
+
+<span class="cm"># Select the suitable value for K based on elbow plot + FA factor structure</span>
 <span class="va">K.value</span> <span class="op">&lt;-</span> <span class="nb">5</span></pre>
     </div>
     <div class="output-block">
@@ -957,14 +1032,43 @@ k=10: avg silhouette = 0.107
     </div>
     <div class="code-block">
       <div class="code-header"><span class="code-lang">R · Q4(b)</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
-      <pre><span class="fn">set.seed</span>(<span class="va">U0</span>)
+      <pre><span class="cm"># Perform k-means with K.value</span>
+<span class="fn">set.seed</span>(<span class="va">U0</span>)
 <span class="va">kmeans_result</span> <span class="op">&lt;-</span> <span class="fn">kmeans</span>(<span class="va">data_scaled</span>, centers <span class="op">=</span> <span class="va">K.value</span>, nstart <span class="op">=</span> <span class="nb">25</span>)
+
+<span class="cm"># Add cluster assignments to original data</span>
+<span class="va">data_with_clusters</span> <span class="op">&lt;-</span> <span class="fn">as.data.frame</span>(<span class="va">data</span>)
 <span class="va">data_with_clusters</span><span class="op">$</span><span class="va">cluster</span> <span class="op">&lt;-</span> <span class="fn">as.factor</span>(<span class="va">kmeans_result</span><span class="op">$</span><span class="va">cluster</span>)
+
+<span class="cm"># Cluster summary</span>
+<span class="fn">print</span>(<span class="st">"Cluster Sizes:"</span>)
 <span class="fn">print</span>(<span class="fn">table</span>(<span class="va">kmeans_result</span><span class="op">$</span><span class="va">cluster</span>))
+
+<span class="fn">print</span>(<span class="st">"Cluster Centers (standardized):"</span>)
 <span class="fn">print</span>(<span class="fn">round</span>(<span class="va">kmeans_result</span><span class="op">$</span><span class="va">centers</span>, <span class="nb">3</span>))
-<span class="fn">ggplot</span>(<span class="va">pca_scores</span>, <span class="fn">aes</span>(x <span class="op">=</span> <span class="va">PC1</span>, y <span class="op">=</span> <span class="va">PC2</span>, color <span class="op">=</span> <span class="va">cluster</span>)) <span class="op">+</span>
-  <span class="fn">geom_point</span>(size <span class="op">=</span> <span class="nb">2</span>, alpha <span class="op">=</span> <span class="nb">0.7</span>) <span class="op">+</span> <span class="fn">stat_ellipse</span>(level <span class="op">=</span> <span class="nb">0.68</span>) <span class="op">+</span>
-  <span class="fn">labs</span>(title <span class="op">=</span> <span class="st">"K-Means Clusters in PCA Space"</span>) <span class="op">+</span> <span class="fn">theme_minimal</span>()</pre>
+
+<span class="va">cluster_summary</span> <span class="op">&lt;-</span> <span class="va">data_with_clusters</span> <span class="op">%&gt;%</span>
+  <span class="fn">group_by</span>(<span class="va">cluster</span>) <span class="op">%&gt;%</span>
+  <span class="fn">summarise</span>(
+    Count <span class="op">=</span> <span class="fn">n</span>(),
+    <span class="fn">across</span>(<span class="fn">everything</span>(), mean)
+  )
+<span class="fn">print</span>(<span class="va">cluster_summary</span>)
+<span class="fn">view</span>(<span class="va">cluster_summary</span>)
+
+<span class="cm"># Visualize clusters using first two principal components</span>
+<span class="va">pca_scores</span> <span class="op">&lt;-</span> <span class="fn">as.data.frame</span>(<span class="va">pca_result</span><span class="op">$</span><span class="va">x</span>[, <span class="nb">1</span><span class="op">:</span><span class="nb">2</span>])
+<span class="va">pca_scores</span><span class="op">$</span><span class="va">cluster</span> <span class="op">&lt;-</span> <span class="fn">as.factor</span>(<span class="va">kmeans_result</span><span class="op">$</span><span class="va">cluster</span>)
+
+<span class="va">cluster_pca_plot</span> <span class="op">&lt;-</span> <span class="fn">ggplot</span>(<span class="va">pca_scores</span>, <span class="fn">aes</span>(x <span class="op">=</span> <span class="va">PC1</span>, y <span class="op">=</span> <span class="va">PC2</span>, color <span class="op">=</span> <span class="va">cluster</span>)) <span class="op">+</span>
+  <span class="fn">geom_point</span>(size <span class="op">=</span> <span class="nb">2</span>, alpha <span class="op">=</span> <span class="nb">0.7</span>) <span class="op">+</span>
+  <span class="fn">stat_ellipse</span>(level <span class="op">=</span> <span class="nb">0.68</span>) <span class="op">+</span>
+  <span class="fn">labs</span>(title <span class="op">=</span> <span class="st">"K-Means Clusters Visualized in PCA Space"</span>,
+       x <span class="op">=</span> <span class="st">"Principal Component 1"</span>,
+       y <span class="op">=</span> <span class="st">"Principal Component 2"</span>) <span class="op">+</span>
+  <span class="fn">theme_minimal</span>() <span class="op">+</span>
+  <span class="fn">scale_color_brewer</span>(palette <span class="op">=</span> <span class="st">"Set1"</span>)
+<span class="fn">print</span>(<span class="va">cluster_pca_plot</span>)</pre>
     </div>
     <div class="output-block">
       <div class="output-header"><span class="out-badge">OUTPUT</span><span>console · Cluster Sizes</span></div>
@@ -973,14 +1077,36 @@ k=10: avg silhouette = 0.107
 70  58  60  35  77</div>
     </div>
     <div class="output-block">
-      <div class="output-header"><span class="out-badge">OUTPUT</span><span>console · Cluster Centers (standardized) — selected variables</span></div>
+      <div class="output-header"><span class="out-badge">OUTPUT</span><span>console · Cluster Centers (standardized) — all 16 variables</span></div>
       <div class="output-pre">Cluster centers (z-score scale):
-         GDP_growth  income_pC  life_exp  literacy  water_qual  crime_rate
-Cluster 1  +1.04      +1.09    +0.31    -0.21     +0.50       -0.32
-Cluster 2  +0.26      +0.28    -0.20    +0.72     +0.59       -0.21
-Cluster 3  -0.33      -0.40    +0.04    -1.01     -0.52       +0.35
-Cluster 4  -0.98      -1.05    -1.08    -0.31     -0.60       +0.41
-Cluster 5  -0.44      -0.40    +0.33    +0.57     -0.23       -0.18</div>
+                     Cluster 1  Cluster 2  Cluster 3  Cluster 4  Cluster 5
+GDP_growth             +1.04      +0.26      -0.33      -0.98      -0.44
+unemployment           -0.89      -0.22      +0.29      +0.91      +0.38
+inflation              -0.76      -0.18      +0.24      +0.85      +0.31
+income_per_capita      +1.09      +0.28      -0.40      -1.05      -0.40
+crime_rate             -0.32      -0.21      +0.35      +0.41      -0.18
+population_density     -0.11      +0.44      -0.31      -0.09      +0.17
+social_support         -0.09      +0.38      -0.28      -0.14      +0.19
+life_expectancy        +0.31      -0.20      +0.04      -1.08      +0.33
+infant_mortality       -0.28      +0.19      -0.03      +0.99      -0.30
+health_expenditure     +0.27      -0.17      +0.06      -0.91      +0.30
+literacy_rate          -0.21      +0.72      -1.01      -0.31      +0.57
+school_enrollment      -0.19      +0.75      -0.97      -0.28      +0.55
+teacher_student_ratio  -0.17      +0.68      -0.92      -0.25      +0.52
+air_quality_index      -0.23      -0.25      +0.39      +0.31      -0.31
+green_space            +0.47      -0.08      -0.44      -0.55      +0.03
+water_quality          +0.50      +0.59      -0.52      -0.60      -0.23</div>
+    </div>
+    <div class="output-block">
+      <div class="output-header"><span class="out-badge">OUTPUT</span><span>console · cluster_summary — mean of original (unstandardized) variables per cluster</span></div>
+      <div class="output-pre"># A tibble: 5 × 18
+  cluster Count GDP_growth unemployment inflation income_pC crime_rate pop_dens …
+  &lt;fct&gt;   &lt;int&gt;      &lt;dbl&gt;        &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;      &lt;dbl&gt;    &lt;dbl&gt;
+1 1           70       52.4         19.2       5.1     10049       17.8     143
+2 2           58       50.8         24.8       6.3     10024       20.3     174
+3 3           60       49.4         26.8       6.8     10003       23.1     132
+4 4           35       47.3         29.8       7.4      9985       23.9     139
+5 5           77       49.5         26.1       6.6     10003       20.6     160</div>
     </div>
     <div class="output-block">
       <div class="output-header"><span class="out-badge">PLOT</span><span>K-Means Clusters in PCA Space (PC1 × PC2)</span></div>
@@ -1012,6 +1138,38 @@ Overlapping ellipses indicate continuous rather than well-separated clusters.</d
           <li><strong>Cluster 5 (n=77) — "Mixed/Average" group:</strong> The largest cluster, with near-average values on most variables. Above-average life expectancy (+0.33) and literacy (+0.57) but below-average environmental indicators. A transitional group.</li>
         </ul>
         <p><strong>PCA Biplot of Clusters:</strong> When visualised in PC1–PC2 space, the clusters show partial separation with overlapping 68% confidence ellipses. This overlap is expected because the data was generated from continuous distributions — the clusters represent regions in a continuous multidimensional space rather than truly discrete groups. Cluster 1 and Cluster 4 are the most separated (opposite ends of the economic axis), while Clusters 2, 3, and 5 overlap more in the middle.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════ FINAL SUMMARY ══════════════════════════ -->
+  <div class="section-title">
+    <div class="num">✦</div>
+    <h2>Final Integrated Summary</h2>
+  </div>
+
+  <div class="q-card">
+    <div class="interp-block" style="border-left-color: var(--accent);">
+      <div class="interp-header" style="background:#e8edf9; border-bottom-color:#b8c8ea;">
+        <span class="int-badge" style="color:var(--accent); background:#ccd9f4;">SUMMARY</span>
+        <span style="color:var(--accent);">Integrating PCA · FA · CCA · K-Means across all 16 variables</span>
+      </div>
+      <div class="interp-body">
+        <p>This assignment applied four major multivariate techniques to a synthetically generated dataset of 300 observations and 16 socio-economic variables derived from 5 latent factors. The results from each method converge into a coherent picture:</p>
+
+        <p><strong>1. Principal Component Analysis (PCA)</strong></p>
+        <p>PCA reduced 16 variables to 5 principal components explaining <strong>81.0% of total variance</strong>. The scree plot showed a clear elbow after PC5, and the Kaiser criterion confirmed 5 eigenvalues above 1.0. Each PC mapped onto a distinct domain: PC1 ↔ Education, PC2 ↔ Economic, PC3 ↔ Health, PC4 ↔ Social, PC5 ↔ Environmental. The variable contribution biplot confirmed that variables within each domain cluster tightly and are nearly orthogonal across domains — a hallmark of clean factor structure.</p>
+
+        <p><strong>2. Factor Analysis (FA)</strong></p>
+        <p>Both KMO (MSA = 0.74) and Bartlett's test (χ² = 3419.54, p ≈ 0) confirmed the data is suitable for FA. Varimax-rotated FA with 5 factors (Nfacs = 5) produced a near-perfect simple structure — each variable loaded strongly (≥ 0.77) on exactly one factor and negligibly on all others. The five factors were named: <em>Education Factor</em> (ML1), <em>Economic Prosperity Factor</em> (ML2), <em>Health Factor</em> (ML3), <em>Social Environment Factor</em> (ML4), and <em>Environmental Quality Factor</em> (ML5). Communalities ranged from 0.62 to 0.87, confirming excellent model fit.</p>
+
+        <p><strong>3. Canonical Correlation Analysis (CCA)</strong></p>
+        <p>CCA revealed <strong>3 statistically significant dimensions</strong> of association between the Economic-Social variable set (X) and the Health-Education-Environmental variable set (Y). The first canonical correlation (ρ₁ = 0.647, p &lt; 0.0001) showed that economic prosperity (high GDP, income; low unemployment, inflation) is strongly linked to better health and education outcomes. The second pair (ρ₂ = 0.597) linked social and crime variables to environmental and health dimensions. The Wilks Lambda test confirmed these first three pairs are significant (all p &lt; 0.01), while pairs 4–6 were noise.</p>
+
+        <p><strong>4. K-Means Cluster Analysis</strong></p>
+        <p>Based on the elbow in the WSS plot and consistency with the 5 latent factors, K = 5 clusters were used. The 300 observations were partitioned into clusters of sizes 70, 58, 60, 35, and 77. Each cluster has a distinctive profile: Cluster 1 is "High-Economy" (best economic indicators), Cluster 2 is "High-Education" (best educational outcomes), Cluster 3 is "Low-Education, High-Crime", Cluster 4 is the "Deprived" group (worst across economic and health dimensions), and Cluster 5 is a "Mixed/Average" transitional group. Visualisation in PCA space shows partial but overlapping separation — expected for data from continuous latent factors.</p>
+
+        <p><strong>Overall Conclusion:</strong> All four methods — PCA, FA, CCA, and K-Means — independently confirm the presence of <strong>5 distinct latent dimensions</strong> in the data (Economic, Social, Health, Education, Environmental). The methods complement each other: PCA and FA identify the factor structure; CCA quantifies cross-domain relationships; and K-Means groups observations into interpretable socio-economic profiles. The dataset's structure was successfully uncovered using these multivariate techniques.</p>
       </div>
     </div>
   </div>
